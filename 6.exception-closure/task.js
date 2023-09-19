@@ -1,46 +1,59 @@
-﻿//Задача № 1
-function cachingDecoratorNew(func) {
-	let cache = [];
-	const maxCacheValuesCount = 5;
-	return (...args) => {
-		const hash = md5(args);
-		let objectInCache = cache.find((item) => item.hash === hash);
-		if (objectInCache) {
-			console.log("Из кеша: " + objectInCache.result);
-			return "Из кеша: " + objectInCache.result;
-		}
-
-		let result = func(...args);
-		cache.push({ hash, result });
-		if (cache.length > maxCacheValuesCount) {
-			cache.shift();
-		}
-		console.log("Вычисляем: " + result);
-		return "Вычисляем: " + result;
-	};
+﻿﻿function parseCount(value) {
+	let resultParsing = Number.parseFloat(value);
+	if (isNaN(resultParsing)) {
+		throw new Error('Невалидное значение');
+	}
+	return resultParsing;
 }
 
-
-//Задача № 2
-function debounceDecoratorNew(func, delay) {
-	let timeoutId = null;
-	wrapper.count = 0;
-	wrapper.allCount = 0;
-
-	function wrapper(...args) {
-		if (timeoutId === null) {
-			func(...args);
-			wrapper.count++;
-		}
-		if (timeoutId) {
-			clearTimeout(timeoutId);
-		}
-		timeoutId = setTimeout(() => {
-			timeoutId = true;
-			func(...args);
-			wrapper.count++;
-		}, delay);
-		wrapper.allCount++;
+function validateCount(value) {
+	try {
+		return parseCount(value);
+	} catch (error) {
+		return error;
 	}
-	return wrapper;
+}
+
+class Triangle {
+	constructor(a, b, c) {
+		this.a = a;
+		this.b = b;
+		this.c = c;
+
+
+		if (!this.errorTriangle(a, b, c)) {
+			throw new Error('Треугольник с такими сторонами не существует');
+		}
+	}
+
+	errorTriangle(a, b, c) {
+		return ((a + b) > c && (c + b) > a && (a + c) > b);
+	}
+
+	get perimeter() {
+		return this.a + this.b + this.c;
+	}
+
+	get area() {
+		let valueForSolution = (this.perimeter / 2) * (this.perimeter / 2 - this.a) * (this.perimeter / 2 - this.b) * (this.perimeter / 2 - this.c);
+		let area = Math.sqrt(valueForSolution);
+		return Number.parseFloat(area.toFixed(3));
+	}
+}
+
+function getTriangle(a, b, c) {
+	try {
+		return new Triangle(a, b, c);
+	} catch (error) {
+		return {
+			get perimeter() {
+				return 'Ошибка! Треугольник не существует';
+			},
+
+			get area() {
+				return 'Ошибка! Треугольник не существует';
+			}
+		}
+
+	}
 }
